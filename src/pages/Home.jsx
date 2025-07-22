@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AddPost from '../components/AddPost';
+import SearchBar from '../components/SearchBar';
 
 export default function Home() {
   const currentUser = 'Cecilia';
@@ -9,6 +10,14 @@ export default function Home() {
     { id: 2, title: 'Segundo post', content: 'Aquí va el contenido del segundo post.', author: 'Juan', likedBy: [] },
   ]);
 
+  const [users] = useState([
+    { id: 1, username: 'Cecilia' },
+    { id: 2, username: 'Juan' },
+    { id: 3, username: 'Maria' },
+  ]);
+
+  const [filteredResults, setFilteredResults] = useState({ posts, users });
+
   function handleAddPost(newPost) {
     const postWithId = {
       id: posts.length + 1,
@@ -16,65 +25,40 @@ export default function Home() {
       likedBy: [],
       ...newPost
     };
-    setPosts([postWithId, ...posts]);
+    const newPosts = [postWithId, ...posts];
+    setPosts(newPosts);
+    setFilteredResults({ posts: newPosts, users }); // actualizar también filtro
   }
 
-  function handleLikeToggle(postId) {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
-        if (post.id === postId) {
-          const hasLiked = post.likedBy.includes(currentUser);
-          const updatedLikes = hasLiked
-            ? post.likedBy.filter(user => user !== currentUser)
-            : [...post.likedBy, currentUser];
-          return { ...post, likedBy: updatedLikes };
-        }
-        return post;
-      })
-    );
-  }
-
-  function handleDelete(postId) {
-    setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-  }
-
-  function handleEdit(postId, newTitle, newContent) {
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId ? { ...post, title: newTitle, content: newContent } : post
-      )
-    );
+  // Esta función recibe resultados filtrados del SearchBar
+  function handleSearchResults(results) {
+    setFilteredResults(results);
   }
 
   return (
     <div>
       <h1>Inicio</h1>
+
+      <SearchBar posts={posts} users={users} onResults={handleSearchResults} />
+
       <AddPost onAdd={handleAddPost} />
 
+      <h2>Posts</h2>
       <ul>
-        {posts.map(post => (
+        {filteredResults.posts.map(post => (
           <li key={post.id} style={{ marginBottom: '15px' }}>
             <h3>{post.title}</h3>
             <p>{post.content}</p>
             <p><strong>Autor:</strong> {post.author}</p>
+          </li>
+        ))}
+      </ul>
 
-            <button onClick={() => handleLikeToggle(post.id)}>
-              {post.likedBy.includes(currentUser) ? 'Quitar Like' : 'Dar Like'}
-            </button>
-            <span> ❤️ {post.likedBy.length}</span>
-
-            {post.author === currentUser && (
-              <>
-                <button onClick={() => {
-                  const newTitle = prompt('Nuevo título:', post.title);
-                  const newContent = prompt('Nuevo contenido:', post.content);
-                  if (newTitle && newContent) {
-                    handleEdit(post.id, newTitle, newContent);
-                  }
-                }}>Editar</button>
-                <button onClick={() => handleDelete(post.id)}>Eliminar</button>
-              </>
-            )}
+      <h2>Usuarios</h2>
+      <ul>
+        {filteredResults.users.map(user => (
+          <li key={user.id}>
+            {user.username}
           </li>
         ))}
       </ul>
