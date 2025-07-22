@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -11,18 +12,19 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Guardar usuario en localStorage (simulando base de datos)
-  localStorage.setItem('user', JSON.stringify(form));
-
-  console.log('Usuario registrado:', form);
-  alert('Usuario registrado con éxito');
-
-  // Opcional: redirigir al login
-  // window.location.href = '/login'; 
-};
+    try {
+      const response = await axios.post('http://localhost:5000/api/register', form);
+      alert(response.data.message || 'Usuario registrado con éxito');
+      setForm({ username: '', email: '', password: '' });
+      // Opcional: redirigir al login
+      // window.location.href = '/login';
+    } catch (error) {
+      alert(error.response?.data?.message || 'Error en el registro');
+    }
+  };
 
   return (
     <div>
