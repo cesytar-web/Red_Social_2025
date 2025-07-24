@@ -1,26 +1,31 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-export default function Profile({ currentUser, posts }) {
-  // Filtrar solo los posts del usuario actual
-  const userPosts = posts.filter(post => post.author === currentUser.username);
+export default function Profile() {
+  const currentUser = useSelector((state) => state.auth.user);
+  const posts = useSelector((state) => state.posts.posts);
+
+  if (!currentUser) {
+    return <p>Debes iniciar sesión para ver tu perfil.</p>;
+  }
+
+  const userPosts = posts.filter((post) => post.author === currentUser.username);
 
   return (
-    <div>
-      <h1>Perfil de {currentUser.username}</h1>
+    <div style={{ maxWidth: '600px', margin: 'auto' }}>
+      <h2>Perfil de {currentUser.username}</h2>
       <p>Email: {currentUser.email}</p>
 
-      <h2>Tus publicaciones</h2>
+      <h3>Tus publicaciones</h3>
       {userPosts.length === 0 ? (
-        <p>No tienes publicaciones aún.</p>
+        <p>No has publicado nada aún.</p>
       ) : (
-        <ul>
-          {userPosts.map(post => (
-            <li key={post.id} style={{ marginBottom: '10px' }}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-            </li>
-          ))}
-        </ul>
+        userPosts.map((post) => (
+          <div key={post.id} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '10px' }}>
+            <h4>{post.title}</h4>
+            <p>{post.content}</p>
+          </div>
+        ))
       )}
     </div>
   );
