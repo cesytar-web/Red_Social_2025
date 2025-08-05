@@ -22,15 +22,22 @@ export default function AddPost({ onAdd }) {
         placeholder="Título"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        aria-label="Título de la publicación"
+        required
+        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
       />
       <br />
       <textarea
         placeholder="Contenido"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        aria-label="Contenido de la publicación"
+        required
+        rows={4}
+        style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginTop: '8px' }}
       />
       <br />
-      <button type="submit">Agregar publicación</button>
+      <button type="submit" style={{ marginTop: '10px' }}>Agregar publicación</button>
     </form>
   );
 }
