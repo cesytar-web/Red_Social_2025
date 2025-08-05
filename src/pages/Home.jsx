@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AddPost from '../components/AddPost';
+import SearchBar from '../components/SearchBar';
 
 export default function Home() {
   const currentUser = 'Cecilia';
@@ -8,6 +9,8 @@ export default function Home() {
     { id: 1, title: 'Primer post', content: 'Este es el contenido del primer post.', author: 'Cecilia', likedBy: [] },
     { id: 2, title: 'Segundo post', content: 'Aquí va el contenido del segundo post.', author: 'Juan', likedBy: [] },
   ]);
+
+   const [query, setQuery] = useState(''); 
 
   function handleAddPost(newPost) {
     const postWithId = {
@@ -45,6 +48,12 @@ export default function Home() {
       )
     );
   }
+
+  const filteredPosts = posts.filter(post =>
+    post.title.toLowerCase().includes(query.toLowerCase()) ||
+    post.content.toLowerCase().includes(query.toLowerCase()) ||
+    post.author.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div>
