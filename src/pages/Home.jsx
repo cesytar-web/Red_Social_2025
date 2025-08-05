@@ -23,6 +23,13 @@ export default function Home() {
     },
   ]);
 
+  // Lista de usuarios simulada
+  const [users] = useState([
+    { id: 1, username: 'Cecilia' },
+    { id: 2, username: 'Juan' },
+    { id: 3, username: 'Ana' },
+  ]);
+
   function handleAddPost(newPost) {
     const postWithId = {
       id: posts.length + 1,
@@ -60,9 +67,15 @@ export default function Home() {
     );
   }
 
+  // Filtro de publicaciones
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(query.toLowerCase()) ||
     post.content.toLowerCase().includes(query.toLowerCase())
+  );
+
+  // Filtro de usuarios
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
@@ -71,17 +84,16 @@ export default function Home() {
       <SearchBar query={query} setQuery={setQuery} />
       <AddPost onAdd={handleAddPost} />
 
-      <ul>
-        {filteredPosts.length === 0 ? (
-          <p>No hay publicaciones que coincidan con la búsqueda.</p>
-        ) : (
-          filteredPosts.map(post => (
+      <h2>Publicaciones</h2>
+      {filteredPosts.length === 0 ? (
+        <p>No hay publicaciones que coincidan con la búsqueda.</p>
+      ) : (
+        <ul>
+          {filteredPosts.map(post => (
             <li key={post.id} style={{ marginBottom: '15px' }}>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
-              <p>
-                <strong>Autor:</strong> {post.author}
-              </p>
+              <p><strong>Autor:</strong> {post.author}</p>
 
               <button onClick={() => handleLikeToggle(post.id)}>
                 {post.likedBy.includes(currentUser) ? 'Quitar Like' : 'Dar Like'}
@@ -105,9 +117,20 @@ export default function Home() {
                 </>
               )}
             </li>
-          ))
-        )}
-      </ul>
+          ))}
+        </ul>
+      )}
+
+      <h2>Usuarios encontrados</h2>
+      {filteredUsers.length === 0 ? (
+        <p>No hay usuarios que coincidan con la búsqueda.</p>
+      ) : (
+        <ul>
+          {filteredUsers.map(user => (
+            <li key={user.id}>{user.username}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
