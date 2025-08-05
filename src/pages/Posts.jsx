@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPosts, deletePost } from '../redux/postsSlice';
 import { Link } from 'react-router-dom';
+import Comments from '../components/Comments';
 
 export default function Posts() {
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ export default function Posts() {
           <div key={post.id} style={postCardStyle}>
             <h3>
               <Link to={`/posts/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              {post.title}
+                {post.title}
               </Link>
             </h3>
             <p>{post.content}</p>
@@ -39,11 +40,17 @@ export default function Posts() {
                 <Link to={`/edit-post/${post.id}`}>
                   <button style={buttonStyle}>Editar</button>
                 </Link>
-                <button style={{ ...buttonStyle, backgroundColor: '#e74c3c' }} onClick={() => handleDelete(post.id)}>
+                <button
+                  style={{ ...buttonStyle, backgroundColor: '#e74c3c' }}
+                  onClick={() => handleDelete(post.id)}
+                >
                   Eliminar
                 </button>
               </div>
             )}
+
+            {/* Comentarios */}
+            <Comments postId={post.id} />
           </div>
         ))
       )}
@@ -56,7 +63,7 @@ const postCardStyle = {
   padding: '15px',
   borderRadius: '8px',
   marginBottom: '15px',
-  backgroundColor: '#f9f9f9'
+  backgroundColor: '#f9f9f9',
 };
 
 const buttonStyle = {
@@ -66,5 +73,5 @@ const buttonStyle = {
   borderRadius: '4px',
   backgroundColor: '#3498db',
   color: 'white',
-  cursor: 'pointer'
+  cursor: 'pointer',
 };
