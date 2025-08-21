@@ -1,31 +1,24 @@
 import React from 'react';
+import '../index.scss'; // Asegúrate de importar el CSS
 
 export default function Profile({ currentUser, posts }) {
   if (!currentUser) {
-    return <p>Debes iniciar sesión para ver tu perfil.</p>;
+    return <p className="no-posts">Debes iniciar sesión para ver tu perfil.</p>;
   }
 
   const userPosts = posts.filter((post) => post.author === currentUser.username);
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px' }}>
+    <div className="profile-container">
       <h2>Perfil de {currentUser.username}</h2>
       <p>Email: {currentUser.email}</p>
 
-      <h3 style={{ marginTop: '20px' }}>Tus publicaciones</h3>
+      <h3>Tus publicaciones</h3>
       {userPosts.length === 0 ? (
-        <p>No has publicado nada aún.</p>
+        <p className="no-posts">No has publicado nada aún.</p>
       ) : (
         userPosts.map((post) => (
-          <div
-            key={post.id}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '10px',
-              marginBottom: '10px',
-            }}
-          >
+          <div key={post.id} className="post-card">
             <h4>{post.title}</h4>
             <p>{post.content}</p>
           </div>

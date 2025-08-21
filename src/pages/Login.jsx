@@ -1,6 +1,9 @@
+// src/pages/Login.jsx
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: 'test@test.com',
     password: '123456'
@@ -22,16 +25,15 @@ export default function Login() {
 
     if (form.email === savedUser.email && form.password === savedUser.password) {
       alert(`¡Bienvenido ${savedUser.username}! Has iniciado sesión correctamente.`);
-      // Aquí podrías redirigir o guardar estado de sesión, por ejemplo:
-      // localStorage.setItem('isLoggedIn', 'true');
-      // window.location.href = '/'; // o a perfil
+      // Redirigir al home o perfil después del login
+      navigate('/home');
     } else {
       alert('Email o contraseña incorrectos.');
     }
   };
 
   return (
-    <div>
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Login de Usuario</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -42,7 +44,7 @@ export default function Login() {
           onChange={handleChange}
           required
         />
-        <br />
+        <br /><br />
         <input
           type="password"
           name="password"
@@ -51,9 +53,12 @@ export default function Login() {
           onChange={handleChange}
           required
         />
-        <br />
+        <br /><br />
         <button type="submit">Ingresar</button>
       </form>
+      <p style={{ marginTop: '20px' }}>
+        ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+      </p>
     </div>
   );
 }

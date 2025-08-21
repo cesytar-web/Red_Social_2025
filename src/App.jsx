@@ -1,40 +1,74 @@
-import React, { useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
-
-import Register from './pages/Register';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import Header from './components/Header';
-import Profile from './pages/Profile';
-import PostDetail from './pages/PostDetail';
-import EditPost from './pages/EditPost'; // Verifica que exista el archivo y ruta correcta
+// src/App.jsx
+import React, { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Profile from "./pages/Profile.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import NavBar from "./components/NavBar.jsx";
 
 export default function App() {
-  // Simula usuario logueado
-  const currentUser = { username: 'Cecilia', email: 'test@test.com' };
+  // Estado del usuario actual
+  const [currentUser, setCurrentUser] = useState({
+    username: "Cecilia",
+    email: "cecilia@example.com"
+  });
 
-  // Simula publicaciones existentes
+  // Estado de posts
   const [posts, setPosts] = useState([
-    { id: 1, title: 'Primer post', content: 'Este es el contenido del primer post.', author: 'Cecilia' },
-    { id: 2, title: 'Segundo post', content: 'Aquí va el contenido del segundo post.', author: 'Juan' },
+    { id: 1, title: "Primer post", content: "Contenido del primer post", author: "Cecilia", likedBy: [] },
+    { id: 2, title: "Segundo post", content: "Contenido del segundo post", author: "Juan", likedBy: [] }
+  ]);
+
+  // Lista de usuarios
+  const [users] = useState([
+    { username: "Cecilia", email: "cecilia@example.com" },
+    { username: "Juan", email: "juan@example.com" },
+    { username: "Pedro", email: "pedro@example.com" }
   ]);
 
   return (
     <>
-      <Header />
+      {/* NavBar recibe props para manejar la sesión y la búsqueda */}
+      <NavBar
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+        posts={posts}
+        users={users}
+      />
+
       <Routes>
         <Route
-          path="/"
-          element={<Home posts={posts} setPosts={setPosts} currentUser={currentUser} />}
+          path="/home"
+          element={
+            <Home
+              posts={posts}
+              setPosts={setPosts}
+              currentUser={currentUser?.username}
+            />
+          }
         />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+
+        <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
+        <Route path="/register" element={<Register setCurrentUser={setCurrentUser} />} />
+
         <Route
           path="/profile"
-          element={<Profile currentUser={currentUser} posts={posts} />}
+          element={<Profile posts={posts} currentUser={currentUser} />}
         />
-        <Route path="/edit-post/:postId" element={<EditPost />} />
-        <Route path="/posts/:postId" element={<PostDetail />} />
+
+        {/* Redirigir la raíz a /home */}
+        <Route path="/" element={<Navigate to="/home" />} />
+
+        {/* Ruta 404 */}
+        <Route
+          path="*"
+          element={
+            <h2 style={{ textAlign: "center", marginTop: "50px" }}>
+              404 - Página no encontrada
+            </h2>
+          }
+        />
       </Routes>
     </>
   );
