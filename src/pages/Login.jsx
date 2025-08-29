@@ -4,11 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Login({ setCurrentUser }) {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    email: '',
-    password: ''
-  });
-
+  const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -19,30 +15,26 @@ export default function Login({ setCurrentUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Login y obtener token
       const response = await axios.post('http://localhost:8080/users/login', form);
-      const token = response.data.token;
+      
+      const { token, message } = response.data;
 
-      // Guardar token en localStorage
-      localStorage.setItem('token', token);
-
-      // Obtener datos reales del usuario con el token
+      // Obtener el perfil del usuario con el token
       const profileResponse = await axios.get('http://localhost:8080/users/getProfile', {
         headers: { Authorization: token }
       });
 
-      // Guardar usuario real en estado global
-      setCurrentUser({
-        username: profileResponse.data.name,
-        email: profileResponse.data.email,
-        token
-      });
+      const user = profileResponse.data;
 
-      navigate('/home'); // redirigir al home
+      // Guardar token y usuario en estado global y localStorage
+      localStorage.setItem('token', token);
+      setCurrentUser({ username: user.name, email: user.email, token });
+
+      alert(message || `¡Bienvenido ${user.name}!`);
+      navigate('/home');
     } catch (err) {
-      const message = err.response?.data?.message || 'Email o contraseña incorrectos';
-      setError(message);
-      console.error('Error en login:', err.response || err);
+      const msg = err.response?.data?.message || 'Email o contraseña incorrectos';
+      setError(msg);
     }
   };
 
@@ -72,7 +64,10 @@ export default function Login({ setCurrentUser }) {
         <button type="submit">Ingresar</button>
       </form>
       <p style={{ marginTop: '20px' }}>
-        ¿No tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/register')}>Regístrate aquí</span>
+        ¿No tienes cuenta?{' '}
+        <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/register')}>
+          Regístrate aquí
+        </span>
       </p>
     </div>
   );
