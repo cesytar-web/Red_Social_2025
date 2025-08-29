@@ -54,7 +54,13 @@ export default function App() {
 
         <Route
           path="/profile"
-          element={<Profile posts={posts} currentUser={currentUser} />}
+          element={
+            <Profile
+              posts={posts}
+              setPosts={setPosts}   // <-- Agregado para que los botones funcionen
+              currentUser={currentUser}
+            />
+          }
         />
 
         {/* Redirigir la raíz a /home */}

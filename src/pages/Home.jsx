@@ -1,87 +1,79 @@
-import React, { useState } from 'react';
-import AddPost from '../components/AddPost';
-import SearchBar from '../components/SearchBar';
+// src/pages/Home.jsx
+import React, { useState } from "react";
+import AddPost from "../components/AddPost";
 
-export default function Home() {
-  const currentUser = 'Cecilia';
+export default function Home({ currentUser }) {
+  const [query, setQuery] = useState("");
 
-  const [query, setQuery] = useState('');
   const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: 'Primer post',
-      content: 'Este es el contenido del primer post.',
-      author: 'Cecilia',
-      likedBy: [],
-    },
-    {
-      id: 2,
-      title: 'Segundo post',
-      content: 'Aquí va el contenido del segundo post.',
-      author: 'Juan',
-      likedBy: [],
-    },
+    { id: 1, title: "Primer post", content: "Este es el contenido del primer post.", author: "Cecilia", likedBy: [] },
+    { id: 2, title: "Segundo post", content: "Aquí va el contenido del segundo post.", author: "Juan", likedBy: [] },
   ]);
 
-  // Lista de usuarios simulada
   const [users] = useState([
-    { id: 1, username: 'Cecilia' },
-    { id: 2, username: 'Juan' },
-    { id: 3, username: 'Ana' },
+    { id: 1, username: "Cecilia" },
+    { id: 2, username: "Juan" },
+    { id: 3, username: "Ana" },
   ]);
 
-  function handleAddPost(newPost) {
-    const postWithId = {
-      id: posts.length + 1,
-      author: currentUser,
-      likedBy: [],
-      ...newPost,
-    };
+  const handleAddPost = (newPost) => {
+    const postWithId = { id: posts.length + 1, author: currentUser, likedBy: [], ...newPost };
     setPosts([postWithId, ...posts]);
-  }
+  };
 
-  function handleLikeToggle(postId) {
-    setPosts(prevPosts =>
-      prevPosts.map(post => {
+  const handleLikeToggle = (postId) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
         if (post.id === postId) {
           const hasLiked = post.likedBy.includes(currentUser);
-          const updatedLikes = hasLiked
-            ? post.likedBy.filter(user => user !== currentUser)
-            : [...post.likedBy, currentUser];
-          return { ...post, likedBy: updatedLikes };
+          return {
+            ...post,
+            likedBy: hasLiked
+              ? post.likedBy.filter((user) => user !== currentUser)
+              : [...post.likedBy, currentUser],
+          };
         }
         return post;
       })
     );
-  }
+  };
 
-  function handleDelete(postId) {
-    setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
-  }
+  const handleEdit = (postId) => {
+    const post = posts.find((p) => p.id === postId);
+    const newTitle = prompt("Nuevo título:", post.title);
+    const newContent = prompt("Nuevo contenido:", post.content);
+    if (newTitle && newContent) {
+      setPosts((prevPosts) =>
+        prevPosts.map((p) => (p.id === postId ? { ...p, title: newTitle, content: newContent } : p))
+      );
+    }
+  };
 
-  function handleEdit(postId, newTitle, newContent) {
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId ? { ...post, title: newTitle, content: newContent } : post
-      )
-    );
-  }
+  // Eliminar sin alert
+  const handleDelete = (postId) => {
+    setPosts((prevPosts) => prevPosts.filter((p) => p.id !== postId));
+  };
 
-  // Filtro de publicaciones
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(query.toLowerCase()) ||
-    post.content.toLowerCase().includes(query.toLowerCase())
+  const filteredPosts = posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(query.toLowerCase()) ||
+      post.content.toLowerCase().includes(query.toLowerCase())
   );
 
-  // Filtro de usuarios
-  const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(query.toLowerCase())
-  );
+  const filteredUsers = users.filter((user) => user.username.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div>
       <h1>Inicio</h1>
-      <SearchBar query={query} setQuery={setQuery} />
+
+      <input
+        type="text"
+        placeholder="Buscar posts o usuarios..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ marginBottom: "15px", padding: "8px", width: "100%" }}
+      />
+
       <AddPost onAdd={handleAddPost} />
 
       <h2>Publicaciones</h2>
@@ -89,30 +81,19 @@ export default function Home() {
         <p>No hay publicaciones que coincidan con la búsqueda.</p>
       ) : (
         <ul>
-          {filteredPosts.map(post => (
-            <li key={post.id} style={{ marginBottom: '15px' }}>
+          {filteredPosts.map((post) => (
+            <li key={post.id} style={{ marginBottom: "15px" }}>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
-              <p><strong>Autor:</strong> {post.author}</p>
-
+              <p>
+                <strong>Autor:</strong> {post.author}
+              </p>
               <button onClick={() => handleLikeToggle(post.id)}>
-                {post.likedBy.includes(currentUser) ? 'Quitar Like' : 'Dar Like'}
+                {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length}
               </button>
-              <span> ❤️ {post.likedBy.length}</span>
-
               {post.author === currentUser && (
                 <>
-                  <button
-                    onClick={() => {
-                      const newTitle = prompt('Nuevo título:', post.title);
-                      const newContent = prompt('Nuevo contenido:', post.content);
-                      if (newTitle && newContent) {
-                        handleEdit(post.id, newTitle, newContent);
-                      }
-                    }}
-                  >
-                    Editar
-                  </button>
+                  <button onClick={() => handleEdit(post.id)}>Editar</button>
                   <button onClick={() => handleDelete(post.id)}>Eliminar</button>
                 </>
               )}
@@ -126,7 +107,7 @@ export default function Home() {
         <p>No hay usuarios que coincidan con la búsqueda.</p>
       ) : (
         <ul>
-          {filteredUsers.map(user => (
+          {filteredUsers.map((user) => (
             <li key={user.id}>{user.username}</li>
           ))}
         </ul>

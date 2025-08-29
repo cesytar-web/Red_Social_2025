@@ -1,40 +1,55 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
+export default function Login({ setCurrentUser }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    email: 'test@test.com',
-    password: '123456'
+    email: '',
+    password: ''
   });
+
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      // Login y obtener token
+      const response = await axios.post('http://localhost:8080/users/login', form);
+      const token = response.data.token;
 
-    const savedUser = JSON.parse(localStorage.getItem('user'));
+      // Guardar token en localStorage
+      localStorage.setItem('token', token);
 
-    if (!savedUser) {
-      alert('No hay usuarios registrados. Por favor, regístrate primero.');
-      return;
-    }
+      // Obtener datos reales del usuario con el token
+      const profileResponse = await axios.get('http://localhost:8080/users/getProfile', {
+        headers: { Authorization: token }
+      });
 
-    if (form.email === savedUser.email && form.password === savedUser.password) {
-      alert(`¡Bienvenido ${savedUser.username}! Has iniciado sesión correctamente.`);
-      // Redirigir al home o perfil después del login
-      navigate('/home');
-    } else {
-      alert('Email o contraseña incorrectos.');
+      // Guardar usuario real en estado global
+      setCurrentUser({
+        username: profileResponse.data.name,
+        email: profileResponse.data.email,
+        token
+      });
+
+      navigate('/home'); // redirigir al home
+    } catch (err) {
+      const message = err.response?.data?.message || 'Email o contraseña incorrectos';
+      setError(message);
+      console.error('Error en login:', err.response || err);
     }
   };
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <h1>Login de Usuario</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -57,7 +72,7 @@ export default function Login() {
         <button type="submit">Ingresar</button>
       </form>
       <p style={{ marginTop: '20px' }}>
-        ¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link>
+        ¿No tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/register')}>Regístrate aquí</span>
       </p>
     </div>
   );
