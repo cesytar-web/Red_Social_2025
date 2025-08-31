@@ -1,20 +1,14 @@
 // src/pages/Home.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddPost from "../components/AddPost";
 
-export default function Home({ currentUser }) {
+export default function Home({ posts, setPosts, users, currentUser }) {
   const [query, setQuery] = useState("");
 
-  const [posts, setPosts] = useState([
-    { id: 1, title: "Primer post", content: "Este es el contenido del primer post.", author: "Cecilia", likedBy: [] },
-    { id: 2, title: "Segundo post", content: "Aquí va el contenido del segundo post.", author: "Juan", likedBy: [] },
-  ]);
-
-  const [users] = useState([
-    { id: 1, username: "Cecilia" },
-    { id: 2, username: "Juan" },
-    { id: 3, username: "Ana" },
-  ]);
+  // Logs para verificar usuarios
+  useEffect(() => {
+    console.log("📌 Lista de usuarios en Home:", users);
+  }, [users]);
 
   const handleAddPost = (newPost) => {
     const postWithId = { id: posts.length + 1, author: currentUser, likedBy: [], ...newPost };
@@ -49,7 +43,6 @@ export default function Home({ currentUser }) {
     }
   };
 
-  // Eliminar sin alert
   const handleDelete = (postId) => {
     setPosts((prevPosts) => prevPosts.filter((p) => p.id !== postId));
   };
@@ -60,7 +53,9 @@ export default function Home({ currentUser }) {
       post.content.toLowerCase().includes(query.toLowerCase())
   );
 
-  const filteredUsers = users.filter((user) => user.username.toLowerCase().includes(query.toLowerCase()));
+  const filteredUsers = users.filter(
+    (user) => user.username.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div>
@@ -102,13 +97,15 @@ export default function Home({ currentUser }) {
         </ul>
       )}
 
-      <h2>Usuarios encontrados</h2>
+      <h2>Lista de Usuarios</h2>
       {filteredUsers.length === 0 ? (
         <p>No hay usuarios que coincidan con la búsqueda.</p>
       ) : (
         <ul>
-          {filteredUsers.map((user) => (
-            <li key={user.id}>{user.username}</li>
+          {filteredUsers.map((user, index) => (
+            <li key={index}>
+              {user.username} - {user.email || "sin email"}
+            </li>
           ))}
         </ul>
       )}

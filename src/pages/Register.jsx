@@ -1,8 +1,8 @@
+// src/pages/Register.jsx
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-export default function Register({ setCurrentUser }) {
+export default function Register({ setCurrentUser, setUserList }) {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     name: '',
@@ -16,30 +16,28 @@ export default function Register({ setCurrentUser }) {
     setError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      // Registro
-      await axios.post('http://localhost:8080/users/register', form);
 
-      // Login automático después del registro
-      const response = await axios.post('http://localhost:8080/users/login', {
-        email: form.email,
-        password: form.password
-      });
+    // Simulación de registro exitoso (sin backend)
+    const newUser = {
+      username: form.name,
+      email: form.email
+    };
 
-      const token = response.data.token;
-      localStorage.setItem('token', token);
+    // Guardar usuario actual
+    setCurrentUser(newUser);
 
-      // Guardar usuario en estado global
-      setCurrentUser({ username: form.name, email: form.email, token });
+    // Agregar a la lista global de usuarios
+    setUserList(prev => {
+      console.log("🟡 Usuarios antes de agregar:", prev);
+      const updated = [...prev, newUser];
+      console.log("🟢 Lista de usuarios actualizada:", updated);
+      return updated;
+    });
 
-      navigate('/home'); // Redirige al Home
-    } catch (err) {
-      const message = err.response?.data?.message || err.message || 'Error en el registro';
-      setError(message);
-      console.error('Error al registrar usuario:', err.response || err);
-    }
+    // Redirigir al Home
+    navigate('/home');
   };
 
   return (
@@ -76,9 +74,6 @@ export default function Register({ setCurrentUser }) {
         <br /><br />
         <button type="submit">Registrar</button>
       </form>
-      <p style={{ marginTop: '20px' }}>
-        ¿Ya tienes cuenta? <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/login')}>Inicia sesión aquí</span>
-      </p>
     </div>
   );
 }

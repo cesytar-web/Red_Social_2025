@@ -20,8 +20,8 @@ export default function App() {
     { id: 2, title: "Segundo post", content: "Contenido del segundo post", author: "Juan", likedBy: [] }
   ]);
 
-  // Lista de usuarios
-  const [users] = useState([
+  // Lista de usuarios (estado global para poder agregar nuevos)
+  const [users, setUsers] = useState([
     { username: "Cecilia", email: "cecilia@example.com" },
     { username: "Juan", email: "juan@example.com" },
     { username: "Pedro", email: "pedro@example.com" }
@@ -44,20 +44,26 @@ export default function App() {
             <Home
               posts={posts}
               setPosts={setPosts}
+              users={users}        // Lista global de usuarios
               currentUser={currentUser?.username}
             />
           }
         />
 
         <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
-        <Route path="/register" element={<Register setCurrentUser={setCurrentUser} />} />
+
+        {/* Pasamos setUsers a Register para que pueda actualizar la lista */}
+        <Route
+          path="/register"
+          element={<Register setCurrentUser={setCurrentUser} setUserList={setUsers} />}
+        />
 
         <Route
           path="/profile"
           element={
             <Profile
               posts={posts}
-              setPosts={setPosts}   // <-- Agregado para que los botones funcionen
+              setPosts={setPosts}
               currentUser={currentUser}
             />
           }
