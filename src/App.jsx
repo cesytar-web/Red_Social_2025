@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -11,25 +11,32 @@ export default function App() {
   // Estado del usuario actual
   const [currentUser, setCurrentUser] = useState({
     username: "Cecilia",
-    email: "cecilia@example.com"
+    email: "cecilia@example.com",
   });
 
   // Estado de posts
   const [posts, setPosts] = useState([
     { id: 1, title: "Primer post", content: "Contenido del primer post", author: "Cecilia", likedBy: [] },
-    { id: 2, title: "Segundo post", content: "Contenido del segundo post", author: "Juan", likedBy: [] }
+    { id: 2, title: "Segundo post", content: "Contenido del segundo post", author: "Juan", likedBy: [] },
   ]);
 
-  // Lista de usuarios (estado global para poder agregar nuevos)
+  // Lista de usuarios
   const [users, setUsers] = useState([
     { username: "Cecilia", email: "cecilia@example.com" },
     { username: "Juan", email: "juan@example.com" },
-    { username: "Pedro", email: "pedro@example.com" }
+    { username: "Pedro", email: "pedro@example.com" },
   ]);
+
+  // Exponer estados al window para pruebas desde la consola
+  useEffect(() => {
+    window.users = users;
+    window.setUsers = setUsers;
+    window.posts = posts;
+    window.setPosts = setPosts;
+  }, [users, posts]);
 
   return (
     <>
-      {/* NavBar recibe props para manejar la sesión y la búsqueda */}
       <NavBar
         currentUser={currentUser}
         setCurrentUser={setCurrentUser}
@@ -44,7 +51,7 @@ export default function App() {
             <Home
               posts={posts}
               setPosts={setPosts}
-              users={users}        // Lista global de usuarios
+              users={users}
               currentUser={currentUser?.username}
             />
           }
@@ -52,7 +59,6 @@ export default function App() {
 
         <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
 
-        {/* Pasamos setUsers a Register para que pueda actualizar la lista */}
         <Route
           path="/register"
           element={<Register setCurrentUser={setCurrentUser} setUserList={setUsers} />}
@@ -69,10 +75,8 @@ export default function App() {
           }
         />
 
-        {/* Redirigir la raíz a /home */}
         <Route path="/" element={<Navigate to="/home" />} />
 
-        {/* Ruta 404 */}
         <Route
           path="*"
           element={

@@ -1,18 +1,26 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function AddPost({ onAdd }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
       alert('Por favor completa todos los campos.');
       return;
     }
-    onAdd({ title, content });
-    setTitle('');
-    setContent('');
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/posts', { title, content });
+      onAdd(response.data); // Enviamos el post creado al Home
+      setTitle('');
+      setContent('');
+    } catch (err) {
+      console.error('Error creando post:', err);
+      alert('Error creando post.');
+    }
   };
 
   return (
@@ -22,19 +30,17 @@ export default function AddPost({ onAdd }) {
         placeholder="Título"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        aria-label="Título de la publicación"
-        required
         style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+        required
       />
       <br />
       <textarea
         placeholder="Contenido"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        aria-label="Contenido de la publicación"
-        required
         rows={4}
         style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginTop: '8px' }}
+        required
       />
       <br />
       <button type="submit" style={{ marginTop: '10px' }}>Agregar publicación</button>
