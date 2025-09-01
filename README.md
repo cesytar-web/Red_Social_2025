@@ -1,12 +1,70 @@
-# React + Vite
+# 🌐 Red Social React - Proyecto Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📄 Descripción
+Este proyecto consiste en una **red social** desarrollada con **React**, **Redux** y **SASS**, donde los usuarios pueden:
 
-Currently, two official plugins are available:
+- Registrarse y hacer login
+- Crear, editar y eliminar publicaciones
+- Dar y quitar **likes** en publicaciones
+- Comentar en publicaciones
+- Buscar perfiles de usuario y publicaciones
+- Visualizar su propio perfil con datos y posts
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
+## 🛠 Requisitos Técnicos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Uso de **ramas en Git**:  
+   - `main` o `master` → versión estable  
+   - `develop` → desarrollo  
+
+2. Implementación de **React Router**:  
+   - `/home` → Página principal con posts  
+   - `/login` → Inicio de sesión  
+   - `/register` → Registro de usuario  
+   - `/profile` → Perfil del usuario logeado  
+
+3. Manejo de estado con **Redux**  
+
+4. Estilos con **SASS**  
+
+5. Cumplimiento de reglas de **código limpio**:  
+   - Componentes ≤ 400 líneas  
+   - Funciones ≤ 75 líneas  
+
+
+## 🧩 Estructura de Componentes
+
+- **Register** → Formulario de registro  
+- **Login** → Formulario de inicio de sesión  
+- **Home** → Página principal con listado de publicaciones  
+- **Posts** → Listado de posts  
+- **Post** → Componente individual de post  
+- **AddPost** → Formulario para crear nuevas publicaciones  
+- **PostDetail** → Detalle de un post con comentarios  
+- **AddComment** → Componente para agregar comentarios  
+- **Perfil** → Vista de perfil con datos y publicaciones del usuario  
+- **Header** → Barra de navegación  
+- **Footer** → Pie de página  
+
+
+## ⚡ Funcionalidades Principales
+
+1. Registro y login de usuarios con validación  
+2. CRUD completo para publicaciones propias  
+3. Sistema de **likes** en publicaciones  
+4. Buscador de usuarios y posts  
+5. Gestión de comentarios en cada post  
+6. Visualización del perfil con datos y posts propios  
+
+## 🎨 Diseño
+
+- Diseño **moderno y responsive**  
+- Interfaz **amigable y clara**  
+- Uso de **SASS** para modularización de estilos  
+- Componentes **reutilizables** para mantener código limpio 
+
+
+## Autor
+
+👤 **Cecilia**   
+💻 Proyecto desarrollado como parte del curso de Frontend
