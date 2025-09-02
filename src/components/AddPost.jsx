@@ -1,3 +1,4 @@
+// src/components/AddPost.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -13,8 +14,17 @@ export default function AddPost({ onAdd }) {
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/api/posts', { title, content });
-      onAdd(response.data); // Enviamos el post creado al Home
+      // Obtenemos token desde localStorage
+      const token = localStorage.getItem('token');
+
+      // Petición POST al backend incluyendo token en headers
+      const response = await axios.post(
+        'http://localhost:8080/posts/create',
+        { title, content },
+        { headers: { Authorization: token } }
+      );
+
+      onAdd(response.data); // Enviamos el post creado al componente padre
       setTitle('');
       setContent('');
     } catch (err) {

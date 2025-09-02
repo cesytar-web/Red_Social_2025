@@ -77,12 +77,9 @@ export default function Home({ posts, setPosts, users, currentUser }) {
               <button onClick={() => handleLikeToggle(post.id)}>
                 {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length}
               </button>
-              {post.author === currentUser && (
-                <>
-                  <button onClick={() => handleEdit(post.id)}>Editar</button>
-                  <button onClick={() => handleDelete(post.id)}>Eliminar</button>
-                </>
-              )}
+              {/* Eliminada la condición: ahora todos los posts muestran Editar y Eliminar */}
+              <button onClick={() => handleEdit(post.id)}>Editar</button>
+              <button onClick={() => handleDelete(post.id)}>Eliminar</button>
             </li>
           ))}
         </ul>
