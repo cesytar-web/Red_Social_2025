@@ -1,5 +1,5 @@
 // src/pages/Home.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AddPost from "../components/AddPost";
 
@@ -19,7 +19,13 @@ export default function Home({ posts, setPosts, users, currentUser }) {
 
   // Funciones para manejar posts
   const handleAddPost = (newPost) => {
-    const postWithId = { id: posts.length + 1, author: currentUser, likedBy: [], ...newPost };
+    const postWithId = {
+      id: Date.now(), // ID único garantizado
+      author: currentUser,
+      likedBy: [],
+      comments: [],
+      ...newPost,
+    };
     setPosts([postWithId, ...posts]);
   };
 
@@ -28,7 +34,11 @@ export default function Home({ posts, setPosts, users, currentUser }) {
     const newTitle = prompt("Nuevo título:", post.title);
     const newContent = prompt("Nuevo contenido:", post.content);
     if (newTitle && newContent) {
-      setPosts(posts.map(p => (p.id === postId ? { ...p, title: newTitle, content: newContent } : p)));
+      setPosts(
+        posts.map(p =>
+          p.id === postId ? { ...p, title: newTitle, content: newContent } : p
+        )
+      );
     }
   };
 
@@ -37,18 +47,20 @@ export default function Home({ posts, setPosts, users, currentUser }) {
   };
 
   const handleLikeToggle = (postId) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
-        const hasLiked = post.likedBy.includes(currentUser);
-        return {
-          ...post,
-          likedBy: hasLiked
-            ? post.likedBy.filter(user => user !== currentUser)
-            : [...post.likedBy, currentUser]
-        };
-      }
-      return post;
-    }));
+    setPosts(
+      posts.map(post => {
+        if (post.id === postId) {
+          const hasLiked = post.likedBy.includes(currentUser);
+          return {
+            ...post,
+            likedBy: hasLiked
+              ? post.likedBy.filter(user => user !== currentUser)
+              : [...post.likedBy, currentUser],
+          };
+        }
+        return post;
+      })
+    );
   };
 
   return (
@@ -73,17 +85,27 @@ export default function Home({ posts, setPosts, users, currentUser }) {
           {filteredPosts.map(post => (
             <li key={post.id} style={{ marginBottom: "15px" }}>
               <h3>
-                <Link to={`/posts/${post.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                <Link
+                  to={`/posts/${post.id}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   {post.title}
                 </Link>
               </h3>
               <p>{post.content}</p>
               <p><strong>Autor:</strong> {post.author}</p>
+
               <button onClick={() => handleLikeToggle(post.id)}>
                 {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length}
               </button>
-              <button onClick={() => handleEdit(post.id)}>Editar</button>
-              <button onClick={() => handleDelete(post.id)}>Eliminar</button>
+
+              {/* Editar y eliminar solo si el usuario actual es el autor */}
+              {currentUser.toLowerCase() === post.author.toLowerCase() && (
+                <>
+                  <button onClick={() => handleEdit(post.id)}>Editar</button>
+                  <button onClick={() => handleDelete(post.id)}>Eliminar</button>
+                </>
+              )}
             </li>
           ))}
         </ul>
