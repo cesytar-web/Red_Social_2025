@@ -1,38 +1,50 @@
 // src/pages/PostDetail.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPosts, deletePost } from '../redux/postsSlice';
 
 export default function PostDetail() {
-  const { postId } = useParams(); // Usamos postId para que coincida con la ruta
+  const { postId } = useParams(); // Id del post desde la URL
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Obtenemos posts y usuario desde el store
-  const posts = useSelector(state => state.posts.items);
-  const user = useSelector(state => state.auth.user);
+  const posts = useSelector((state) => state.posts.items);
+  const user = useSelector((state) => state.auth.user);
 
-  // Si no hay posts cargados, los traemos
+  const [loading, setLoading] = useState(true);
+
+  // Logs de depuración
+  console.log('Props/posts recibidos en PostDetail:', posts);
+  console.log('postId recibido en URL:', postId);
+  console.log('Usuario actual:', user);
+
+  // Traer posts si no existen
   useEffect(() => {
-    if (posts.length === 0) {
-      dispatch(fetchPosts());
-    }
+    const loadPosts = async () => {
+      if (posts.length === 0) {
+        await dispatch(fetchPosts());
+      }
+      setLoading(false);
+    };
+    loadPosts();
   }, [dispatch, posts.length]);
 
-  // Encontrar el post por id (aseguramos que sea número)
-  const post = posts.find(p => p.id === Number(postId));
+  // Buscar el post por id (convertimos ambos a número)
+  const post = posts.find((p) => Number(p.id) === Number(postId));
+  console.log('Post encontrado:', post); // Log para verificar si se encuentra el post
 
-  // Si no existe el post, mostrar mensaje
-  if (!post) {
-    return <p>Publicación no encontrada.</p>;
-  }
+  // Estado de carga
+  if (loading) return <p>Cargando publicación...</p>;
+
+  // Mostrar si no se encuentra el post
+  if (!post) return <p>Publicación no encontrada.</p>;
 
   // Función para eliminar post con confirmación
   const handleDelete = () => {
     if (window.confirm('¿Seguro que deseas eliminar esta publicación?')) {
       dispatch(deletePost(post.id));
-      navigate('/');
+      navigate('/home');
     }
   };
 
@@ -58,7 +70,7 @@ export default function PostDetail() {
       )}
 
       <hr />
-      <Link to="/">Volver a Inicio</Link>
+      <Link to="/home">Volver a Inicio</Link>
     </div>
   );
 }

@@ -4,12 +4,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { editPost } from '../redux/postsSlice';
 
 export default function EditPost() {
-  const { id } = useParams();
+  const { id } = useParams(); // este es el _id del post
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const post = useSelector((state) =>
-    state.posts.items.find((p) => p.id === Number(id))
+    state.posts.items.find((p) => p._id === id) // usamos _id en lugar de id
   );
 
   const [title, setTitle] = useState('');
@@ -28,8 +28,12 @@ export default function EditPost() {
       alert('Por favor completa todos los campos.');
       return;
     }
-    dispatch(editPost({ id: post.id, title, content, author: post.author }));
-    navigate(`/posts/${post.id}`); // Ir al detalle del post después de editar
+
+    // Enviamos los datos al slice
+    dispatch(editPost({ _id: post._id, title, content, author: post.author }));
+
+    // Redirigir al detalle del post después de editar
+    navigate(`/posts/${post._id}`);
   };
 
   if (!post) {

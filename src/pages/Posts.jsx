@@ -28,7 +28,7 @@ export default function Posts() {
         posts.map((post) => (
           <div key={post.id} style={postCardStyle}>
             <h3>
-              <Link to={`/posts/${post.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link to={`/posts/${post._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 {post.title}
               </Link>
             </h3>

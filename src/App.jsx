@@ -6,6 +6,7 @@ import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import NavBar from "./components/NavBar.jsx";
+import PostDetail from './pages/PostDetail';
 
 export default function App() {
   // Estado del usuario actual
@@ -58,7 +59,7 @@ export default function App() {
         />
 
         <Route path="/login" element={<Login setCurrentUser={setCurrentUser} />} />
-
+        
         <Route
           path="/register"
           element={<Register setCurrentUser={setCurrentUser} setUserList={setUsers} />}
@@ -73,6 +74,12 @@ export default function App() {
               currentUser={currentUser}
             />
           }
+        />
+
+        {/* RUTA AGREGADA: Detalle del post */}
+        <Route
+          path="/posts/:postId"
+          element={<PostDetail />}
         />
 
         <Route path="/" element={<Navigate to="/home" />} />

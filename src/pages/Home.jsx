@@ -1,5 +1,6 @@
 // src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import AddPost from "../components/AddPost";
 
 export default function Home({ posts, setPosts, users, currentUser }) {
@@ -71,13 +72,16 @@ export default function Home({ posts, setPosts, users, currentUser }) {
         <ul>
           {filteredPosts.map(post => (
             <li key={post.id} style={{ marginBottom: "15px" }}>
-              <h3>{post.title}</h3>
+              <h3>
+                <Link to={`/posts/${post.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  {post.title}
+                </Link>
+              </h3>
               <p>{post.content}</p>
               <p><strong>Autor:</strong> {post.author}</p>
               <button onClick={() => handleLikeToggle(post.id)}>
                 {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length}
               </button>
-              {/* Eliminada la condición: ahora todos los posts muestran Editar y Eliminar */}
               <button onClick={() => handleEdit(post.id)}>Editar</button>
               <button onClick={() => handleDelete(post.id)}>Eliminar</button>
             </li>
