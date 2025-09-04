@@ -1,10 +1,13 @@
 // src/components/AddPost.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux'; // ✅ Importamos useSelector
 
 export default function AddPost({ onAdd }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  const user = useSelector((state) => state.auth.user); // ✅ Obtenemos el usuario logeado
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,17 +17,20 @@ export default function AddPost({ onAdd }) {
     }
 
     try {
-      // Obtenemos token desde localStorage
       const token = localStorage.getItem('token');
 
-      // Petición POST al backend incluyendo token en headers
+      // ✅ Enviamos el username como author al backend
       const response = await axios.post(
         'http://localhost:8080/posts/create',
-        { title, content },
+        {
+          title,
+          content,
+          author: user.username, 
+        },
         { headers: { Authorization: token } }
       );
 
-      onAdd(response.data); // Enviamos el post creado al componente padre
+      onAdd(response.data);
       setTitle('');
       setContent('');
     } catch (err) {
