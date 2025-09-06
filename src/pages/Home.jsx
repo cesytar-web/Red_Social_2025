@@ -3,24 +3,27 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AddPost from "../components/AddPost";
 
-export default function Home({ posts, setPosts, users, currentUser }) {
+export default function Home({ posts = [], setPosts, users = [], currentUser = "" }) {
   const [query, setQuery] = useState("");
 
-  // Filtrado de posts y usuarios según búsqueda
+  // Filtrado seguro de posts y usuarios
   const filteredPosts = posts.filter(
     post =>
-      post.title.toLowerCase().includes(query.toLowerCase()) ||
-      post.content.toLowerCase().includes(query.toLowerCase())
+      (post.title || "").toLowerCase().includes(query.toLowerCase()) ||
+      (post.content || "").toLowerCase().includes(query.toLowerCase())
   );
 
   const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(query.toLowerCase())
+    (user.username || "").toLowerCase().includes(query.toLowerCase())
   );
 
-  // Funciones para manejar posts
   const handleAddPost = (newPost) => {
+    if (!currentUser) {
+      console.error("No hay usuario actual para agregar post");
+      return;
+    }
     const postWithId = {
-      id: Date.now(), // ID único garantizado
+      id: Date.now(),
       author: currentUser,
       likedBy: [],
       comments: [],
@@ -31,8 +34,10 @@ export default function Home({ posts, setPosts, users, currentUser }) {
 
   const handleEdit = (postId) => {
     const post = posts.find(p => p.id === postId);
-    const newTitle = prompt("Nuevo título:", post.title);
-    const newContent = prompt("Nuevo contenido:", post.content);
+    if (!post) return;
+
+    const newTitle = prompt("Nuevo título:", post.title || "");
+    const newContent = prompt("Nuevo contenido:", post.content || "");
     if (newTitle && newContent) {
       setPosts(
         posts.map(p =>
@@ -43,24 +48,24 @@ export default function Home({ posts, setPosts, users, currentUser }) {
   };
 
   const handleDelete = (postId) => {
+    const post = posts.find(p => p.id === postId);
+    if (!post) return;
     setPosts(posts.filter(p => p.id !== postId));
   };
 
   const handleLikeToggle = (postId) => {
-    setPosts(
-      posts.map(post => {
-        if (post.id === postId) {
-          const hasLiked = post.likedBy.includes(currentUser);
-          return {
-            ...post,
-            likedBy: hasLiked
-              ? post.likedBy.filter(user => user !== currentUser)
-              : [...post.likedBy, currentUser],
-          };
-        }
-        return post;
-      })
-    );
+    const post = posts.find(p => p.id === postId);
+    if (!post || !currentUser) return;
+
+    const hasLiked = post.likedBy.includes(currentUser);
+    const updatedPost = {
+      ...post,
+      likedBy: hasLiked
+        ? post.likedBy.filter(user => user !== currentUser)
+        : [...post.likedBy, currentUser],
+    };
+
+    setPosts(posts.map(p => (p.id === postId ? updatedPost : p)));
   };
 
   return (
@@ -87,20 +92,20 @@ export default function Home({ posts, setPosts, users, currentUser }) {
               <h3>
                 <Link
                   to={`/posts/${post.id}`}
+                  state={{ post }}
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
-                  {post.title}
+                  {post.title || "Sin título"}
                 </Link>
               </h3>
-              <p>{post.content}</p>
-              <p><strong>Autor:</strong> {post.author}</p>
+              <p>{post.content || "Sin contenido"}</p>
+              <p><strong>Autor:</strong> {post.author || "Desconocido"}</p>
 
               <button onClick={() => handleLikeToggle(post.id)}>
-                {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length}
+                {post.likedBy.includes(currentUser) ? "Quitar Like" : "Dar Like"} ❤️ {post.likedBy.length || 0}
               </button>
 
-              {/* Editar y eliminar solo si el usuario actual es el autor */}
-              {currentUser.toLowerCase() === post.author.toLowerCase() && (
+              {currentUser && post.author && currentUser.toLowerCase() === post.author.toLowerCase() && (
                 <>
                   <button onClick={() => handleEdit(post.id)}>Editar</button>
                   <button onClick={() => handleDelete(post.id)}>Eliminar</button>
@@ -117,7 +122,7 @@ export default function Home({ posts, setPosts, users, currentUser }) {
       ) : (
         <ul>
           {filteredUsers.map(user => (
-            <li key={user.email}>{user.username} - {user.email}</li>
+            <li key={user.email}>{user.username || "Desconocido"} - {user.email}</li>
           ))}
         </ul>
       )}

@@ -1,23 +1,23 @@
-// Variables de color
-$primary-color: #4d79ff;
-$secondary-color: #ff6b6b;
-$accent-color: #ff7f50;
-$accent-hover: #ff9066;
-$active-color: #e06642;
-$background-color: #fff7e6;
-$text-color: #333;
-$post-bg: #ffe066;
-$post-alt-bg: #ffd6a5;
-$post-card-bg: #fff3e6;
+// ===== Variables de color modernos =====
+$primary-color: #1b5e20;       // Verde oscuro intenso
+$secondary-color: #43a047;     // Verde medio
+$accent-color: #66bb6a;        // Verde claro
+$accent-hover: #a5d6a7;        // Verde muy claro
+$active-color: #2e7d32;        // Verde profundo para botones activos
+$background-gradient: linear-gradient(135deg, #e8f5e9, #c8e6c9); // Fondo general
+$text-color: #1b5e20;          // Texto principal
+$post-gradient: linear-gradient(135deg, #a5d6a7, #81c784); // Posts con degradiente
+$post-card-gradient: linear-gradient(135deg, #dcedc8, #c8e6c9); // Cards individuales
 
 // ===== Global =====
 body {
   font-family: 'Poppins', 'Arial', sans-serif;
-  background-color: $background-color;
+  background: $background-gradient;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
+  transition: background 0.5s ease;
 }
 
 div {
@@ -28,45 +28,60 @@ div {
 
 h1 {
   text-align: center;
-  color: $secondary-color;
-  font-size: 2.2rem;
+  font-size: 2.4rem;
+  background: linear-gradient(to right, $primary-color, $secondary-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 h2 {
   color: $primary-color;
   margin-top: 30px;
-  border-bottom: 2px solid #ffe066;
+  border-bottom: 3px solid $accent-color;
   padding-bottom: 5px;
 }
 
+// ===== Inputs y Textareas =====
 input[type="text"],
 textarea {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin: 5px 0 15px 0;
-  border: 1px solid lighten($secondary-color, 20%);
-  border-radius: 12px;
+  border: none;
+  border-radius: 14px;
   font-size: 16px;
-  background-color: $post-card-bg;
+  background: $post-card-gradient;
   color: $text-color;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 12px rgba(76,175,80,0.6);
+  }
 }
 
+// ===== Botones =====
 button {
-  background-color: $secondary-color;
+  background: linear-gradient(135deg, $accent-color, $accent-hover);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
   cursor: pointer;
   margin-right: 5px;
   font-weight: bold;
-  transition: 0.2s;
-}
-.button {
+  font-size: 1rem;
+  transition: 0.3s all ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
   &:hover {
-   background-color: lighten($secondary-color, 10%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, lighten($accent-color, 5%), lighten($accent-hover, 5%));
+  }
 }
-}
+
 // ===== Navegación =====
 nav {
   display: flex;
@@ -75,24 +90,20 @@ nav {
   margin: 30px 0;
 
   button {
-    background-color: $accent-color;
+    background: linear-gradient(135deg, $accent-color, $accent-hover);
     color: white;
-    border: none;
-    padding: 12px 20px;
-    min-width: 140px;
-    height: 50px;
-    border-radius: 8px;
-    cursor: pointer;
+    padding: 14px 24px;
+    min-width: 150px;
+    border-radius: 12px;
+    font-size: 1rem;
     font-weight: bold;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: 0.2s;
-    text-decoration: none;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 
     &:hover {
-      background-color: $accent-hover;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+      background: linear-gradient(135deg, lighten($accent-color, 10%), lighten($accent-hover, 10%));
     }
 
     &.active {
@@ -102,85 +113,75 @@ nav {
   }
 }
 
-// ===== Posts =====
-li {
-  background-color: $post-bg;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  color: #2d2d2d;
-
-  & + li {
-    margin-top: 15px;
-  }
-}
-
+// ===== Posts y listas =====
 ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
 
   li {
-    background-color: $post-alt-bg;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    color: #2d2d2d;
+    background: $post-gradient;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    color: $text-color;
+    transition: transform 0.3s, box-shadow 0.3s;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.15);
+    }
+
+    & + li {
+      margin-top: 15px;
+    }
   }
 }
 
-// ===== Perfil =====
+// ===== Perfil y cards =====
 .profile-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   h2 {
     text-align: center;
-    color: $secondary-color;
-    font-family: 'Poppins', sans-serif;
     font-size: 2rem;
-    margin-bottom: 5px;
-  }
-
-  p {
-    color: #4d4d4d;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    line-height: 1.5;
+    background: linear-gradient(to right, $primary-color, $secondary-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
   }
 
   h3 {
     margin-top: 25px;
     color: $primary-color;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
   }
 
   .post-card {
-    background-color: $post-card-bg;
-    border-radius: 12px;
-    padding: 15px;
+    background: $post-card-gradient;
+    border-radius: 14px;
+    padding: 18px;
     margin-bottom: 15px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: translateY(-3px);
+    }
 
     h4 {
       margin: 0 0 5px 0;
       color: $accent-color;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.2rem;
     }
 
     p {
       margin: 0;
       color: $text-color;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
     }
   }
 
   p.no-posts {
-    color: blue;
+    color: $primary-color;
     font-style: italic;
   }
 }

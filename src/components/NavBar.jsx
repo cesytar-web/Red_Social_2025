@@ -1,43 +1,70 @@
 // src/components/NavBar.jsx
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export default function NavBar({ currentUser, setCurrentUser }) {
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Limpiar el usuario actual
     setCurrentUser(null);
-    // Redirigir a login
     navigate('/login');
   };
 
   return (
-    <nav>
-      <button
-        className={location.pathname === '/home' ? 'active' : ''}
-        onClick={() => navigate('/home')}
-      >
-        Inicio
-      </button>
-
-      {/* Mostrar "Mi Perfil" solo si hay usuario */}
-      {currentUser && (
-        <button
-          className={location.pathname === '/profile' ? 'active' : ''}
-          onClick={() => navigate('/profile')}
-        >
-          Mi Perfil
+    <nav style={navStyle}>
+      {/* Inicio */}
+      <Link to="/home" style={linkStyle}>
+        <button style={{ ...buttonStyle, ...(location.pathname === '/home' ? activeStyle : {}) }}>
+          Inicio
         </button>
+      </Link>
+
+      {/* Mi Perfil */}
+      {currentUser && (
+        <Link to="/profile" style={linkStyle}>
+          <button style={{ ...buttonStyle, ...(location.pathname === '/profile' ? activeStyle : {}) }}>
+            Mi Perfil
+          </button>
+        </Link>
       )}
 
-      {/* Mostrar botón según estado de sesión */}
+      {/* Login / Logout */}
       {currentUser ? (
-        <button onClick={handleLogout}>Cerrar Sesión</button>
+        <button style={buttonStyle} onClick={handleLogout}>Cerrar Sesión</button>
       ) : (
-        <button onClick={() => navigate('/login')}>Ingresar</button>
+        <Link to="/login" style={linkStyle}>
+          <button style={buttonStyle}>Ingresar</button>
+        </Link>
       )}
     </nav>
   );
 }
+
+// ===== Estilos =====
+const navStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '20px',
+  margin: '30px 0',
+};
+
+const buttonStyle = {
+  padding: '12px 20px',
+  borderRadius: '12px',
+  border: 'none',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  background: 'linear-gradient(135deg, #66bb6a, #a5d6a7)',
+  color: 'white',
+  boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+  transition: '0.3s',
+};
+
+const activeStyle = {
+  background: 'linear-gradient(135deg, #2e7d32, #43a047)',
+};
+
+const linkStyle = {
+  textDecoration: 'none',
+};
