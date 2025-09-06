@@ -1,3 +1,4 @@
+// src/components/Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -16,18 +17,23 @@ export default function Login({ setCurrentUser }) {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:8080/users/login', form);
-      
+
       const { token, message } = response.data;
 
-      // Obtener el perfil del usuario con el token
+      // 🔍 Debug: ver qué llega del backend
+      console.log("🟢 Token recibido del backend:", token);
+
+      // Obtener perfil con el token
       const profileResponse = await axios.get('http://localhost:8080/users/getProfile', {
         headers: { Authorization: token }
       });
 
       const user = profileResponse.data;
 
-      // Guardar token y usuario en estado global y localStorage
+      // Guardar token y usuario
       localStorage.setItem('token', token);
+      console.log("🟢 Token guardado en localStorage:", localStorage.getItem('token'));
+
       setCurrentUser({ username: user.name, email: user.email, token });
 
       alert(message || `¡Bienvenido ${user.name}!`);

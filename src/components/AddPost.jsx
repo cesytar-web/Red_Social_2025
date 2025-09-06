@@ -1,13 +1,13 @@
 // src/components/AddPost.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux'; // ✅ Importamos useSelector
+import { useSelector } from 'react-redux';
 
 export default function AddPost({ onAdd }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const user = useSelector((state) => state.auth.user); // ✅ Obtenemos el usuario logeado
+  const user = useSelector((state) => state.auth.user);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,23 +19,30 @@ export default function AddPost({ onAdd }) {
     try {
       const token = localStorage.getItem('token');
 
-      // ✅ Enviamos el username como author al backend
       const response = await axios.post(
         'http://localhost:8080/posts/create',
+        { title, content },
         {
-          title,
-          content,
-          author: user.username, 
-        },
-        { headers: { Authorization: token } }
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
       onAdd(response.data);
       setTitle('');
       setContent('');
     } catch (err) {
-      console.error('Error creando post:', err);
-      alert('Error creando post.');
+      if (err.response) {
+        console.error('Error response data:', err.response.data);
+        console.error('Error response status:', err.response.status);
+      } else if (err.request) {
+        console.error('Error request:', err.request);
+      } else {
+        console.error('Error message:', err.message);
+      }
+      alert('Error creando post. Revisa la consola para más detalles.');
     }
   };
 
