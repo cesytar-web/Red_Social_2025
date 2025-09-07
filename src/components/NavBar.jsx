@@ -20,6 +20,13 @@ export default function NavBar({ currentUser, setCurrentUser }) {
         </button>
       </Link>
 
+      {/* Libros */}
+      <Link to="/books" style={linkStyle}>
+        <button style={{ ...buttonStyle, ...(location.pathname === '/books' ? activeStyle : {}) }}>
+          Libros
+        </button>
+      </Link>
+
       {/* Mi Perfil */}
       {currentUser && (
         <Link to="/profile" style={linkStyle}>
