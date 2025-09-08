@@ -1,14 +1,17 @@
+// src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './auth/authSlice';
-import postReducer from './postsSlice';
+import postsReducer from './postsSlice';
 import commentsReducer from './comments/commentsSlice';
-import booksReducer from './books/booksSlice'; // <-- Importa el nuevo slice
+import booksReducer from './books/booksSlice';
+import userReducer from './userSlice'; // <-- import correcto
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
-        posts: postReducer,
+        posts: postsReducer,
         comments: commentsReducer,
-        books: booksReducer, // <-- Agrégalo aquí
+        books: booksReducer,
+        user: userReducer, // <-- clave para acceder a userSlice
     },
 });

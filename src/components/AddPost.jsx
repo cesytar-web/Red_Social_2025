@@ -7,12 +7,18 @@ export default function AddPost({ onAdd }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  const user = useSelector((state) => state.auth.user);
+  // Tomar el usuario actual desde el slice user
+  const currentUser = useSelector((state) => state.user.currentUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
       alert('Por favor completa todos los campos.');
+      return;
+    }
+
+    if (!currentUser) {
+      alert('Debes estar logueado para agregar una publicación.');
       return;
     }
 
@@ -24,13 +30,19 @@ export default function AddPost({ onAdd }) {
         { title, content },
         {
           headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`, // formato estándar JWT
             'Content-Type': 'application/json',
           },
         }
       );
 
-      onAdd(response.data);
+      // Agregar el post al estado de Redux a través de onAdd
+      onAdd({
+        ...response.data,
+        author: currentUser.username,
+        likedBy: response.data.likedBy || []
+      });
+
       setTitle('');
       setContent('');
     } catch (err) {
