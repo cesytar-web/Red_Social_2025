@@ -62,6 +62,10 @@ Este proyecto consiste en una **red social** desarrollada con **React**, **Redux
 - Interfaz **amigable y clara**  
 - Uso de **SASS** para modularización de estilos  
 - Componentes **reutilizables** para mantener código limpio 
+## Backend del proyecto
+
+Puedes encontrar el repositorio del backend aquí:  
+👉 [Repositorio Backend](https://github.com/cesytar-web/D_Segundo_Proyecto_Backend.git)
 
 
 ## Autor
