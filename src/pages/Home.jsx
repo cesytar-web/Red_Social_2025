@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import AddPost from "../components/AddPost";
@@ -19,13 +18,18 @@ export default function Home() {
 
   const [query, setQuery] = useState("");
 
-  // Cargar posts y usuarios al montar
+  const allowedUsers = [
+    "cecilia@example.com",
+    "juan@example.com",
+    "ana@example.com",
+    "patricia@example.com",
+  ];
+
   useEffect(() => {
     dispatch(fetchPosts());
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  // Filtrado seguro
   const filteredPosts = posts.filter(
     (post) =>
       (post.title || "").toLowerCase().includes(query.toLowerCase()) ||
@@ -33,25 +37,22 @@ export default function Home() {
   );
 
   const filteredUsers = users.filter((user) =>
-    (user.username || "").toLowerCase().includes(query.toLowerCase())
+    allowedUsers.includes(user.email)
   );
 
-  // Agregar nueva publicación
   const handleAddPost = (newPost) => {
     if (!currentUser) return;
-    dispatch(addPost(newPost));
+    dispatch(addPost({ ...newPost, author: currentUser.name }));
   };
 
-  // Toggle like
   const handleLikeToggle = (postId) => {
     if (!currentUser) return;
-    dispatch(toggleLike({ postId, username: currentUser.username }));
+    dispatch(toggleLike({ postId, username: currentUser.name }));
   };
 
-  // Editar publicación
   const handleEdit = (post) => {
     if (!post || !currentUser) return;
-    if (post.author !== currentUser.username) return;
+    if (post.author !== currentUser.name) return;
 
     const newTitle = prompt("Nuevo título:", post.title || "");
     const newContent = prompt("Nuevo contenido:", post.content || "");
@@ -60,68 +61,80 @@ export default function Home() {
     }
   };
 
-  // Eliminar publicación
   const handleDelete = (postId) => {
     dispatch(deletePost(postId));
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Inicio</h1>
+    <div className="main-container">
+      {/* Título centrado */}
+      <div className="title-container">
+        <h1>Inicio</h1>
+      </div>
 
+      {/* Buscador */}
       <input
         type="text"
         placeholder="Buscar posts o usuarios..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        style={{ marginBottom: "15px", padding: "8px", width: "100%" }}
+        className="search-input"
       />
 
+      {/* Agregar publicación */}
       <AddPost onAdd={handleAddPost} />
 
-      <h2>Publicaciones</h2>
-      {filteredPosts.length === 0 ? (
-        <p>No hay publicaciones que coincidan con la búsqueda.</p>
-      ) : (
-        <ul>
-          {filteredPosts.map((post) => (
-            <li key={post.id} style={{ marginBottom: "15px" }}>
-              <h3>{post.title || "Sin título"}</h3>
-              <p>{post.content || "Sin contenido"}</p>
-              <p>
-                <strong>Autor:</strong> {post.author || "Desconocido"}
-              </p>
+      {/* Publicaciones */}
+      <section className="section">
+        <h2>Publicaciones</h2>
+        {filteredPosts.length === 0 ? (
+          <p>No hay publicaciones que coincidan con la búsqueda.</p>
+        ) : (
+          <ul className="posts-list">
+            {filteredPosts.map((post) => (
+              <li key={post._id || post.id} className="post-card">
+                <h4>{post.title || "Sin título"}</h4>
+                <p>{post.content || "Sin contenido"}</p>
+                <p className="author">
+                  <strong>Autor:</strong> {post.author || "Sin nombre"}
+                </p>
 
-              <button onClick={() => handleLikeToggle(post.id)}>
-                {post.likedBy?.includes(currentUser?.username)
-                  ? "Quitar Like"
-                  : "Dar Like"}{" "}
-                ❤️ {post.likedBy?.length || 0}
-              </button>
+                <button onClick={() => handleLikeToggle(post._id || post.id)}>
+                  {post.likedBy?.includes(currentUser?.name)
+                    ? "Quitar Like"
+                    : "Dar Like"}{" "}
+                  ❤️ {post.likedBy?.length || 0}
+                </button>
 
-              {currentUser?.username === post.author && (
-                <>
-                  <button onClick={() => handleEdit(post)}>Editar</button>
-                  <button onClick={() => handleDelete(post.id)}>Eliminar</button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+                {currentUser?.name === post.author && (
+                  <>
+                    <button onClick={() => handleEdit(post)}>Editar</button>
+                    <button onClick={() => handleDelete(post._id || post.id)}>
+                      Eliminar
+                    </button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
-      <h2>Usuarios</h2>
-      {filteredUsers.length === 0 ? (
-        <p>No hay usuarios que coincidan con la búsqueda.</p>
-      ) : (
-        <ul>
-          {filteredUsers.map((user) => (
-            <li key={user.email}>
-              {user.username || "Desconocido"} - {user.email}
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Usuarios */}
+      <section className="section">
+        <h2>Usuarios</h2>
+        {filteredUsers.length === 0 ? (
+          <p>No hay usuarios que coincidan con la búsqueda.</p>
+        ) : (
+          <ul className="users-list">
+            {filteredUsers.map((user) => (
+              <li key={user.email}>
+                {user.name || "Sin nombre"} - {user.email}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

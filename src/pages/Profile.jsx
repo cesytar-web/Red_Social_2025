@@ -1,5 +1,5 @@
 // src/pages/Profile.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import AddPost from '../components/AddPost';
 import '../index.scss';
 
@@ -9,13 +9,13 @@ export default function Profile({ currentUser, posts, setPosts }) {
   }
 
   // Filtrar solo los posts del usuario logueado
-  const userPosts = posts.filter(post => post.author === currentUser.username);
+  const userPosts = posts.filter(post => post.author === (currentUser.username || "Sin nombre"));
 
   // Función para agregar nuevas publicaciones
   const handleAddPost = (newPost) => {
     const postWithId = {
-      id: posts.length + 1,
-      author: currentUser.username,
+      id: Date.now(), // ID único temporal
+      author: currentUser.username || "Sin nombre",
       likedBy: [],
       ...newPost,
     };
@@ -27,10 +27,10 @@ export default function Profile({ currentUser, posts, setPosts }) {
     setPosts(prevPosts =>
       prevPosts.map(post => {
         if (post.id === postId) {
-          const hasLiked = post.likedBy.includes(currentUser.username);
+          const hasLiked = post.likedBy.includes(currentUser.username || "Sin nombre");
           const updatedLikes = hasLiked
-            ? post.likedBy.filter(user => user !== currentUser.username)
-            : [...post.likedBy, currentUser.username];
+            ? post.likedBy.filter(user => user !== (currentUser.username || "Sin nombre"))
+            : [...post.likedBy, currentUser.username || "Sin nombre"];
           return { ...post, likedBy: updatedLikes };
         }
         return post;
@@ -41,6 +41,7 @@ export default function Profile({ currentUser, posts, setPosts }) {
   // Función para editar post
   const handleEdit = (postId) => {
     const post = posts.find(p => p.id === postId);
+    if (!post) return;
     const newTitle = prompt('Nuevo título:', post.title);
     const newContent = prompt('Nuevo contenido:', post.content);
     if (newTitle && newContent) {
@@ -59,7 +60,7 @@ export default function Profile({ currentUser, posts, setPosts }) {
 
   return (
     <div className="profile-container">
-      <h2>Perfil de {currentUser.username}</h2>
+      <h2>Perfil de {currentUser.username || "Sin nombre"}</h2>
       <p>Email: {currentUser.email}</p>
 
       <AddPost onAdd={handleAddPost} />
@@ -70,10 +71,11 @@ export default function Profile({ currentUser, posts, setPosts }) {
       ) : (
         userPosts.map(post => (
           <div key={post.id} className="post-card">
-            <h4>{post.title}</h4>
-            <p>{post.content}</p>
+            <h4>{post.title || "Sin título"}</h4>
+            <p>{post.content || "Sin contenido"}</p>
+            <p><strong>Autor:</strong> {post.author || "Sin nombre"}</p>
             <button onClick={() => handleLikeToggle(post.id)}>
-              {post.likedBy.includes(currentUser.username) ? 'Quitar Like' : 'Dar Like'} ❤️ {post.likedBy.length}
+              {post.likedBy.includes(currentUser.username || "Sin nombre") ? 'Quitar Like' : 'Dar Like'} ❤️ {post.likedBy.length}
             </button>
             <button onClick={() => handleEdit(post.id)}>Editar</button>
             <button onClick={() => handleDelete(post.id)}>Eliminar</button>

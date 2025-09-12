@@ -6,55 +6,50 @@ import { useSelector } from 'react-redux';
 export default function AddPost({ onAdd }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-
-  // Tomar el usuario actual desde el slice user
   const currentUser = useSelector((state) => state.user.currentUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!title.trim() || !content.trim()) {
       alert('Por favor completa todos los campos.');
       return;
     }
 
-    if (!currentUser) {
+    const token = currentUser?.token || localStorage.getItem('token');
+
+    if (!token) {
       alert('Debes estar logueado para agregar una publicación.');
       return;
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const postData = {
+        title,
+        content,
+        author: currentUser?.name, // usar name como autor
+        likedBy: [],               // inicializar likedBy vacío
+      };
 
       const response = await axios.post(
         'http://localhost:8080/posts/create',
-        { title, content },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // formato estándar JWT
-            'Content-Type': 'application/json',
-          },
-        }
+        postData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Agregar el post al estado de Redux a través de onAdd
       onAdd({
-        ...response.data,
-        author: currentUser.username,
-        likedBy: response.data.likedBy || []
+        _id: response.data._id,
+        title: response.data.title,
+        content: response.data.content,
+        author: currentUser.name,
+        likedBy: response.data.likedBy || [],
       });
 
       setTitle('');
       setContent('');
     } catch (err) {
-      if (err.response) {
-        console.error('Error response data:', err.response.data);
-        console.error('Error response status:', err.response.status);
-      } else if (err.request) {
-        console.error('Error request:', err.request);
-      } else {
-        console.error('Error message:', err.message);
-      }
-      alert('Error creando post. Revisa la consola para más detalles.');
+      console.error('Error al crear post:', err.response?.data || err.message);
+      alert('Error creando publicación. Revisa la consola.');
     }
   };
 

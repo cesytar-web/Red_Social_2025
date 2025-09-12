@@ -1,14 +1,14 @@
-// src/pages/Register.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addUser, setCurrentUser } from '../redux/userSlice';
+import axios from 'axios';
 
-export default function Register({ setCurrentUser, setUserList }) {
+export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
+  const dispatch = useDispatch();
+
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -16,28 +16,22 @@ export default function Register({ setCurrentUser, setUserList }) {
     setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8080/users/register', form);
+      const newUser = response.data.user;
+      const token = response.data.token;
 
-    // Simulación de registro exitoso (sin backend)
-    const newUser = {
-      username: form.name,
-      email: form.email
-    };
+      dispatch(setCurrentUser({ ...newUser, token }));
+      dispatch(addUser(newUser));
+      localStorage.setItem('token', token);
 
-    // Guardar usuario actual
-    setCurrentUser(newUser);
-
-    // Agregar a la lista global de usuarios
-    setUserList(prev => {
-      console.log("🟡 Usuarios antes de agregar:", prev);
-      const updated = [...prev, newUser];
-      console.log("🟢 Lista de usuarios actualizada:", updated);
-      return updated;
-    });
-
-    // Redirigir al Home
-    navigate('/home');
+      alert('Usuario registrado con éxito');
+      navigate('/home');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error al registrar usuario');
+    }
   };
 
   return (

@@ -1,10 +1,14 @@
-// src/components/Login.jsx
+// src/pages/Login.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setCurrentUser } from '../redux/userSlice';
+import { Link, useNavigate } from 'react-router-dom';
 
-export default function Login({ setCurrentUser }) {
+export default function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
@@ -16,31 +20,23 @@ export default function Login({ setCurrentUser }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Login para obtener token
       const response = await axios.post('http://localhost:8080/users/login', form);
+      const { token } = response.data;
 
-      const { token, message } = response.data;
-
-      // 🔍 Debug: ver qué llega del backend
-      console.log("🟢 Token recibido del backend:", token);
-
-      // Obtener perfil con el token
+      // Obtener perfil completo del usuario logueado
       const profileResponse = await axios.get('http://localhost:8080/users/getProfile', {
-        headers: { Authorization: token }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const user = profileResponse.data;
-
-      // Guardar token y usuario
+      const user = profileResponse.data.user; // Aseguramos que usamos .user
+      dispatch(setCurrentUser({ ...user, token }));
       localStorage.setItem('token', token);
-      console.log("🟢 Token guardado en localStorage:", localStorage.getItem('token'));
 
-      setCurrentUser({ username: user.name, email: user.email, token });
-
-      alert(message || `¡Bienvenido ${user.name}!`);
+      alert(`¡Bienvenido ${user.name}!`); // Ahora mostrará el nombre correcto
       navigate('/home');
     } catch (err) {
-      const msg = err.response?.data?.message || 'Email o contraseña incorrectos';
-      setError(msg);
+      setError(err.response?.data?.message || 'Email o contraseña incorrectos');
     }
   };
 
@@ -71,9 +67,9 @@ export default function Login({ setCurrentUser }) {
       </form>
       <p style={{ marginTop: '20px' }}>
         ¿No tienes cuenta?{' '}
-        <span style={{ color: 'blue', cursor: 'pointer' }} onClick={() => navigate('/register')}>
+        <Link to="/register" style={{ color: 'blue', textDecoration: 'underline' }}>
           Regístrate aquí
-        </span>
+        </Link>
       </p>
     </div>
   );

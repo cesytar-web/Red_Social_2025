@@ -1,108 +1,69 @@
+// src/components/AddBookForm.jsx
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addBook } from '../redux/books/booksSlice';
 import { useNavigate } from 'react-router-dom';
 
-const AddBookForm = () => {
+export default function AddBookForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     title: '',
     author: '',
     genre: '',
     description: '',
     coverUrl: '',
-    ISBN: '',
+    ISBN: ''
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = e => {
+    setFormData({...formData, [e.target.name]: e.target.value});
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-
-    if (!form.title || !form.author) {
-      alert('El título y autor son obligatorios');
-      return;
-    }
-
-    dispatch(addBook(form));
-    navigate('/books'); // redirige a la lista de libros
+    dispatch(addBook(formData));
+    setFormData({
+      title: '',
+      author: '',
+      genre: '',
+      description: '',
+      coverUrl: '',
+      ISBN: ''
+    });
+    alert('Libro agregado!');
+    navigate('/books'); // Redirige a lista de libros
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: 600, margin: '0 auto' }}>
-      <h2>Agregar nuevo libro</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="title"
-          placeholder="Título"
-          value={form.title}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="author"
-          placeholder="Autor"
-          value={form.author}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="genre"
-          placeholder="Género"
-          value={form.genre}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="ISBN"
-          placeholder="ISBN"
-          value={form.ISBN}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-        <input
-          type="text"
-          name="coverUrl"
-          placeholder="URL de la portada"
-          value={form.coverUrl}
-          onChange={handleChange}
-          style={inputStyle}
-        />
-        <textarea
-          name="description"
-          placeholder="Resumen del libro"
-          value={form.description}
-          onChange={handleChange}
-          style={{ ...inputStyle, height: 100 }}
-        />
-        <button type="submit" style={buttonStyle}>Guardar libro</button>
+    <div style={{ padding: '2rem' }}>
+      <h2>Agregar Nuevo Libro</h2>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px' }}>
+        <input name="title" value={formData.title} onChange={handleChange} placeholder="Título" required style={inputStyle} />
+        <input name="author" value={formData.author} onChange={handleChange} placeholder="Autor" required style={inputStyle} />
+        <input name="genre" value={formData.genre} onChange={handleChange} placeholder="Género" style={inputStyle} />
+        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Descripción" style={inputStyle} />
+        <input name="coverUrl" value={formData.coverUrl} onChange={handleChange} placeholder="URL Portada" style={inputStyle} />
+        <input name="ISBN" value={formData.ISBN} onChange={handleChange} placeholder="ISBN" style={inputStyle} />
+        <button type="submit" style={buttonStyle}>Agregar Libro</button>
       </form>
     </div>
   );
-};
+}
 
 const inputStyle = {
-  display: 'block',
-  marginBottom: '1rem',
-  width: '100%',
-  padding: '0.5rem',
-  fontSize: '1rem',
+  marginBottom: '10px',
+  padding: '8px',
+  borderRadius: '6px',
+  border: '1px solid #ccc',
 };
 
 const buttonStyle = {
-  padding: '0.5rem 1rem',
-  fontSize: '1rem',
-  cursor: 'pointer',
+  padding: '10px',
+  borderRadius: '8px',
+  border: 'none',
+  background: 'linear-gradient(135deg, #66bb6a, #a5d6a7)',
+  color: 'white',
+  fontWeight: 'bold',
+  cursor: 'pointer'
 };
-
-export default AddBookForm;
