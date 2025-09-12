@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import AddPost from "../components/AddPost";
@@ -18,38 +19,52 @@ export default function Home() {
 
   const [query, setQuery] = useState("");
 
-  const allowedUsers = [
-    "cecilia@example.com",
-    "juan@example.com",
-    "ana@example.com",
-    "patricia@example.com",
-  ];
-
   useEffect(() => {
     dispatch(fetchPosts());
     dispatch(fetchUsers());
   }, [dispatch]);
 
+  // Agregar currentUser a la lista de usuarios si no está
+  const allUsers = currentUser
+    ? [...users, currentUser].filter(
+        (value, index, self) =>
+          index === self.findIndex((u) => u.email === value.email)
+      )
+    : users;
+
+  // Filtrado de posts
   const filteredPosts = posts.filter(
     (post) =>
       (post.title || "").toLowerCase().includes(query.toLowerCase()) ||
       (post.content || "").toLowerCase().includes(query.toLowerCase())
   );
 
-  const filteredUsers = users.filter((user) =>
-    allowedUsers.includes(user.email)
+  // Filtrado de usuarios
+  const filteredUsers = allUsers.filter(
+    (user) =>
+      (user.name || "").toLowerCase().includes(query.toLowerCase()) ||
+      (user.email || "").toLowerCase().includes(query.toLowerCase())
   );
 
+  // Agregar nueva publicación
   const handleAddPost = (newPost) => {
-    if (!currentUser) return;
-    dispatch(addPost({ ...newPost, author: currentUser.name }));
+    if (!currentUser) {
+      alert("Debes estar logeado para publicar.");
+      return;
+    }
+    dispatch(addPost({ ...newPost }));
   };
 
+  // Dar / quitar like
   const handleLikeToggle = (postId) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      alert("Debes estar logeado para dar like.");
+      return;
+    }
     dispatch(toggleLike({ postId, username: currentUser.name }));
   };
 
+  // Editar publicación
   const handleEdit = (post) => {
     if (!post || !currentUser) return;
     if (post.author !== currentUser.name) return;
@@ -61,80 +76,70 @@ export default function Home() {
     }
   };
 
+  // Eliminar publicación
   const handleDelete = (postId) => {
     dispatch(deletePost(postId));
   };
 
   return (
-    <div className="main-container">
-      {/* Título centrado */}
-      <div className="title-container">
-        <h1>Inicio</h1>
-      </div>
+    <div className="main-container" style={{ padding: "20px" }}>
+      <h1>Inicio</h1>
 
-      {/* Buscador */}
       <input
         type="text"
         placeholder="Buscar posts o usuarios..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="search-input"
+        style={{ marginBottom: "15px", padding: "8px", width: "100%" }}
       />
 
-      {/* Agregar publicación */}
       <AddPost onAdd={handleAddPost} />
 
-      {/* Publicaciones */}
-      <section className="section">
-        <h2>Publicaciones</h2>
-        {filteredPosts.length === 0 ? (
-          <p>No hay publicaciones que coincidan con la búsqueda.</p>
-        ) : (
-          <ul className="posts-list">
-            {filteredPosts.map((post) => (
-              <li key={post._id || post.id} className="post-card">
-                <h4>{post.title || "Sin título"}</h4>
-                <p>{post.content || "Sin contenido"}</p>
-                <p className="author">
-                  <strong>Autor:</strong> {post.author || "Sin nombre"}
-                </p>
+      <h2>Publicaciones</h2>
+      {filteredPosts.length === 0 ? (
+        <p>No hay publicaciones que coincidan con la búsqueda.</p>
+      ) : (
+        <ul>
+          {filteredPosts.map((post) => (
+            <li key={post._id || post.id} style={{ marginBottom: "15px" }}>
+              <h3>{post.title || "Sin título"}</h3>
+              <p>{post.content || "Sin contenido"}</p>
+              <p>
+                <strong>Autor:</strong> {post.author || "Sin nombre"}
+              </p>
 
-                <button onClick={() => handleLikeToggle(post._id || post.id)}>
-                  {post.likedBy?.includes(currentUser?.name)
-                    ? "Quitar Like"
-                    : "Dar Like"}{" "}
-                  ❤️ {post.likedBy?.length || 0}
-                </button>
+              <button onClick={() => handleLikeToggle(post._id || post.id)}>
+                {post.likedBy?.includes(currentUser?.name)
+                  ? "Quitar Like"
+                  : "Dar Like"}{" "}
+                ❤️ {post.likedBy?.length || 0}
+              </button>
 
-                {currentUser?.name === post.author && (
-                  <>
-                    <button onClick={() => handleEdit(post)}>Editar</button>
-                    <button onClick={() => handleDelete(post._id || post.id)}>
-                      Eliminar
-                    </button>
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+              {currentUser?.name === post.author && (
+                <>
+                  <button onClick={() => handleEdit(post)}>Editar</button>
+                  <button onClick={() => handleDelete(post._id || post.id)}>
+                    Eliminar
+                  </button>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
 
-      {/* Usuarios */}
-      <section className="section">
-        <h2>Usuarios</h2>
-        {filteredUsers.length === 0 ? (
-          <p>No hay usuarios que coincidan con la búsqueda.</p>
-        ) : (
-          <ul className="users-list">
-            {filteredUsers.map((user) => (
-              <li key={user.email}>
-                {user.name || "Sin nombre"} - {user.email}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <h2>Usuarios</h2>
+      {filteredUsers.length === 0 ? (
+        <p>No hay usuarios que coincidan con la búsqueda.</p>
+      ) : (
+        <ul>
+          {filteredUsers.map((user) => (
+            <li key={user.email}>
+              {user.name || "Sin nombre"} - {user.email}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
